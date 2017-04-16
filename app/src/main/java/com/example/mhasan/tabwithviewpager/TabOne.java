@@ -22,22 +22,28 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mhasan on 4/12/2017.
  */
 
 public class TabOne extends Fragment {
-
+    ArrayList<HashMap<String, String>> contactList;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        contactList = new ArrayList<>();
         new GetData().execute();
         return inflater.inflate(R.layout.tab1, container, false);
     }
 
     public class GetData extends AsyncTask {
-        public static final int CONNECTION_TIMEOUT = 10000;
+
+        public static final int CONNECTION_TIMEOUT = 30000;
         public static final int READ_TIMEOUT = 15000;
         private ProgressDialog pDialog;
         HttpURLConnection conn;
@@ -56,6 +62,7 @@ public class TabOne extends Fragment {
         @Override
         protected Object doInBackground(Object[] params) {
             try {
+                Log.d("inside doInBackground", " make call to server");
                 url = new URL("http://api.androidhive.info/contacts/");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -69,11 +76,14 @@ public class TabOne extends Fragment {
                 conn.setRequestMethod("GET");
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d("can't open connection",e.toString());
                 return e.toString();
+
             }
 
             try {
                 int response_code = conn.getResponseCode();
+                Log.d("response_code",String.valueOf(response_code));
                 if (response_code == HttpURLConnection.HTTP_OK) {
                     //READ DATA SENT FROM SERVER
                     InputStream input = conn.getInputStream();
@@ -84,9 +94,37 @@ public class TabOne extends Fragment {
                         result.append(line);
 
                     }
+                    Log.d("result", result.toString());
+                    String finalResult =result.toString();
+                    try {
+                        JSONObject jsonObject = new JSONObject(finalResult);
+                        JSONArray contacts = jsonObject.getJSONArray("contacts");
+                        for(int i=0;i< contacts.length();i++){
+                            JSONObject c= contacts.getJSONObject(i);
+                            String id = c.getString("id");
+                            String name = c.getString("name");
+                            String email = c.getString("email");
+                            String address = c.getString("address");
+                            String gender = c.getString("gender");
+                            HashMap<String, String> contact = new HashMap<>();
+                            contact.put("id", id);
+                            contact.put("name", name);
+                            contact.put("email", email);
+
+                            contactList.add(contact);
+                        }
+
+                    }catch (final JSONException e){
+                        Log.e( "Json parsing error: " ,e.getMessage());
+                    }
+
+
+
+
                     return (result.toString());
 
                 } else {
+                    Log.d("READ DATA FROM SERVER", "Can't read data");
                     return ("unsuccessful");
                 }
 
@@ -96,19 +134,27 @@ public class TabOne extends Fragment {
 
             } finally {
                 conn.disconnect();
-              //  pDialog.dismiss();
+
             }
 
 
         }
 
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            for (HashMap<String, String> map : contactList)
+                for (Map.Entry<String, String> entry : map.entrySet())
+                    Log.d("Contactlist", entry.getValue());
+                   // view.append(entry.getKey() + " => " + entry.getValue());
 
-      //  @Override
-        protected void onPostExecute(String  result) {
-          //  super.onPostExecute(o);
-            pDialog.dismiss();
+
+
+/*
             try {
-                JSONArray jArray = new JSONArray(result);
+                JSONArray jArray = new JSONArray("contacts");
                 for(int i=0 ;i<jArray.length();i++){
                     JSONObject json_data= jArray.getJSONObject(i);
                     Log.d("fish name is ",json_data.getString("name"));
@@ -116,10 +162,12 @@ public class TabOne extends Fragment {
                 }
             }
             catch (JSONException e){
+                Log.d("final result ",e.toString());
                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
-            }
+            }*/
 
         }
+
     }
 }
 
