@@ -11,9 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
 
 /**
  * Created by mhasan on 4/12/2017.
@@ -32,17 +34,26 @@ import java.util.Map;
 public class TabOne extends Fragment {
     ArrayList<HashMap<String, String>> contactList;
     private RecyclerView contactRV;
+    private AdapterContact cAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         contactList = new ArrayList<>();
-        new GetData().execute();
         return inflater.inflate(R.layout.tab1, container, false);
     }
 
-    public class GetData extends AsyncTask {
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        contactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
+        cAdapter = new AdapterContact(getActivity(), contactList);
+        contactRV.setAdapter(cAdapter);
+        contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        new GetData().execute("https://api.myjson.com/bins/n7vjb");
+    }
 
+    public class GetData extends AsyncTask<String, Void, String> {
         public static final int CONNECTION_TIMEOUT = 30000;
         public static final int READ_TIMEOUT = 15000;
         private ProgressDialog pDialog;
@@ -60,16 +71,16 @@ public class TabOne extends Fragment {
         }
 
         @Override
-        protected Object doInBackground(Object[] params) {
+        protected String doInBackground(String[] params) {
+            StringBuilder result = null;
             try {
                 Log.d("inside doInBackground", " make call to server");
-                url = new URL("http://api.androidhive.info/contacts/");
+                url = new URL(params[0]);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return e.toString();
             }
             try {
-
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECTION_TIMEOUT);
@@ -77,10 +88,7 @@ public class TabOne extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("can't open connection", e.toString());
-
-
             }
-
             try {
                 int response_code = conn.getResponseCode();
                 Log.d("response_code", String.valueOf(response_code));
@@ -88,70 +96,58 @@ public class TabOne extends Fragment {
                     //READ DATA SENT FROM SERVER
                     InputStream input = conn.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
+                    result = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
                         result.append(line);
 
                     }
                     Log.d("result", result.toString());
-                    String finalResult = result.toString();
-                    try {
-                        JSONObject jsonObject = new JSONObject(finalResult);
-                        JSONArray contacts = jsonObject.getJSONArray("contacts");
-                        for (int i = 0; i < contacts.length(); i++) {
-                            JSONObject c = contacts.getJSONObject(i);
-                            String id = c.getString("id");
-                            String name = c.getString("name");
-                            String email = c.getString("email");
-                            String address = c.getString("address");
-                            String gender = c.getString("gender");
-                            HashMap<String, String> contact = new HashMap<>();
-                            contact.put("id", id);
-                            contact.put("name", name);
-                            contact.put("email", email);
-
-                            contactList.add(contact);
-                        }
-
-                    } catch (final JSONException e) {
-                        Log.e("Json parsing error: ", e.getMessage());
-                    }
-
-
-                    return (result.toString());
-
                 } else {
                     Log.d("READ DATA FROM SERVER", "Can't read data");
-                    return ("unsuccessful");
+                    result = null;
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-                return e.toString();
-
+                result = null;
             } finally {
                 conn.disconnect();
-
             }
-
-
+            return result == null ? null : result.toString();
         }
 
         @Override
-        protected void onPostExecute(Object o) {
+        protected void onPostExecute(String o) {
             super.onPostExecute(o);
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-            for (HashMap<String, String> map : contactList)
-                for (Map.Entry<String, String> entry : map.entrySet())
-                    Log.d("Contactlist", entry.getValue());
-            contactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
-            AdapterContact cAdapter = new AdapterContact(getActivity(), contactList);
-            contactRV.setAdapter(cAdapter);
-            contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+            pDialog.dismiss();
+            updateView(o);
         }
+    }
 
+    private void updateView(String obj) {
+        try {
+            JSONObject jsonObject = new JSONObject(obj);
+            JSONArray contacts = jsonObject.getJSONArray("posts");
+            for (int i = 0; i < contacts.length(); i++) {
+                JSONObject c = contacts.getJSONObject(i);
+                String pic = c.getString("profile_pic");
+                String title = c.getString("title");
+
+                JSONObject user = c.getJSONObject("user");
+                String firstName = user.getString("first_name");
+                String lastName = user.getString("last_name");
+
+                HashMap<String, String> contact = new HashMap<>();
+                contact.put("title", title);
+                contact.put("pic", pic);
+                contact.put("fullName", firstName.concat(" ").concat(lastName));
+                contactList.add(contact);
+            }
+        } catch (final JSONException e) {
+            Log.e("Json parsing error: ", e.getMessage());
+        }
+        cAdapter.notifyDataSetChanged();
     }
 }
 
