@@ -12,6 +12,8 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by mhasan on 4/16/2017.
  */
@@ -39,7 +41,6 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.DataHold
         holder.fullName.setText(current.get("fullName"));
         holder.title.setText(current.get("title"));
         Glide.with(context).load(current.get("pic"))
-                .placeholder(R.drawable.img)
                 .into(holder.pic);
     }
 
@@ -51,13 +52,13 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.DataHold
     class DataHolder extends RecyclerView.ViewHolder {
         TextView fullName, title;
 
-        de.hdodenhof.circleimageview.CircleImageView pic ;
+        CircleImageView pic ;
 
         DataHolder(View itemView) {
             super(itemView);
             fullName = (TextView) itemView.findViewById(R.id.fullName);
             title = (TextView) itemView.findViewById(R.id.title);
-            pic = (de.hdodenhof.circleimageview.CircleImageView ) itemView.findViewById(R.id.pic);
+            pic = (CircleImageView) itemView.findViewById(R.id.pic);
         }
     }
 }
