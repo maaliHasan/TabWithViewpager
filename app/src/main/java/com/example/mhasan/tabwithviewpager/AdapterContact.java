@@ -21,32 +21,27 @@ public class AdapterContact extends RecyclerView.Adapter {
     private Context context;
     private LayoutInflater inflater;
     ArrayList<HashMap<String, String>> FinalContactList;
-    TabOne tab1;
-    int currentPos=0;
 
     public AdapterContact(Context context, ArrayList<HashMap<String, String>> contactList) {
         this.context = context;
-        inflater= LayoutInflater.from(context);
-        FinalContactList =contactList;
+        inflater = LayoutInflater.from(context);
+        FinalContactList = contactList;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view=inflater.inflate(R.layout.container_data, parent,false);
-        DataHolder holder= new DataHolder(view);
+        View view = inflater.inflate(R.layout.container_data, parent, false);
+        DataHolder holder = new DataHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    DataHolder dataHolder= (DataHolder)holder;
-        HashMap<String, String> current= FinalContactList.get(position);
-        dataHolder.name.setText( current.get("name"));
-        dataHolder.email.setText( current.get("email"));
-        dataHolder.id.setText( current.get("id"));
-
-
-
+        DataHolder dataHolder = (DataHolder) holder;
+        HashMap<String, String> current = FinalContactList.get(position);
+        dataHolder.name.setText(current.get("name"));
+        dataHolder.email.setText(current.get("email"));
+        dataHolder.id.setText(current.get("id"));
 
 
     }
@@ -56,13 +51,14 @@ public class AdapterContact extends RecyclerView.Adapter {
         return FinalContactList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
-        TextView name,email,id;
+    public class DataHolder extends RecyclerView.ViewHolder {
+        TextView name, email, id;
+
         public DataHolder(View itemView) {
             super(itemView);
-            name= (TextView)itemView.findViewById(R.id.name);
-            email=(TextView)itemView.findViewById(R.id.email);
-            id=(TextView)itemView.findViewById(R.id.id);
+            name = (TextView) itemView.findViewById(R.id.name);
+            email = (TextView) itemView.findViewById(R.id.email);
+            id = (TextView) itemView.findViewById(R.id.id);
         }
 
     }
