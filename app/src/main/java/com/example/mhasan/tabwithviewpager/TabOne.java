@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,8 @@ import java.util.Map;
 
 public class TabOne extends Fragment {
     ArrayList<HashMap<String, String>> contactList;
+    private RecyclerView contactRV;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,14 +80,14 @@ public class TabOne extends Fragment {
                 conn.setRequestMethod("GET");
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.d("can't open connection",e.toString());
-                return e.toString();
+                Log.e("can't open connection", e.toString());
+
 
             }
 
             try {
                 int response_code = conn.getResponseCode();
-                Log.d("response_code",String.valueOf(response_code));
+                Log.d("response_code", String.valueOf(response_code));
                 if (response_code == HttpURLConnection.HTTP_OK) {
                     //READ DATA SENT FROM SERVER
                     InputStream input = conn.getInputStream();
@@ -95,12 +99,12 @@ public class TabOne extends Fragment {
 
                     }
                     Log.d("result", result.toString());
-                    String finalResult =result.toString();
+                    String finalResult = result.toString();
                     try {
                         JSONObject jsonObject = new JSONObject(finalResult);
                         JSONArray contacts = jsonObject.getJSONArray("contacts");
-                        for(int i=0;i< contacts.length();i++){
-                            JSONObject c= contacts.getJSONObject(i);
+                        for (int i = 0; i < contacts.length(); i++) {
+                            JSONObject c = contacts.getJSONObject(i);
                             String id = c.getString("id");
                             String name = c.getString("name");
                             String email = c.getString("email");
@@ -114,11 +118,9 @@ public class TabOne extends Fragment {
                             contactList.add(contact);
                         }
 
-                    }catch (final JSONException e){
-                        Log.e( "Json parsing error: " ,e.getMessage());
+                    } catch (final JSONException e) {
+                        Log.e("Json parsing error: ", e.getMessage());
                     }
-
-
 
 
                     return (result.toString());
@@ -148,24 +150,10 @@ public class TabOne extends Fragment {
             for (HashMap<String, String> map : contactList)
                 for (Map.Entry<String, String> entry : map.entrySet())
                     Log.d("Contactlist", entry.getValue());
-                   // view.append(entry.getKey() + " => " + entry.getValue());
-
-
-
-/*
-            try {
-                JSONArray jArray = new JSONArray("contacts");
-                for(int i=0 ;i<jArray.length();i++){
-                    JSONObject json_data= jArray.getJSONObject(i);
-                    Log.d("fish name is ",json_data.getString("name"));
-
-                }
-            }
-            catch (JSONException e){
-                Log.d("final result ",e.toString());
-                Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
-            }*/
-
+            contactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
+            AdapterContact cAdapter = new AdapterContact(getActivity(), contactList);
+            contactRV.setAdapter(cAdapter);
+            contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         }
 
     }
