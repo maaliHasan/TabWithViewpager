@@ -29,9 +29,7 @@ import java.util.HashMap;
 
 public class TabOne extends Fragment {
     ArrayList<HashMap<String, String>> contactList;
-    private RecyclerView contactRV;
-    private AdapterContact cAdapter;
-    private DataBroadCastRecv Drcv;
+    private AdapterContact mCAdapter;
 
     @Nullable
     @Override
@@ -43,14 +41,14 @@ public class TabOne extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        contactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
-        cAdapter = new AdapterContact(getActivity(), contactList);
-        contactRV.setAdapter(cAdapter);
-        contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Drcv = new DataBroadCastRecv();
+        RecyclerView mContactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
+        mCAdapter = new AdapterContact(getActivity(), contactList);
+        mContactRV.setAdapter(mCAdapter);
+        mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
-        getActivity().registerReceiver(Drcv, filter);
+        getActivity().registerReceiver(mDBR, filter);
     }
 
     private void updateView(String result) {
@@ -75,10 +73,10 @@ public class TabOne extends Fragment {
         } catch (final JSONException e) {
             Log.e("Json parsing error: ", e.getMessage());
         }
-        cAdapter.notifyDataSetChanged();
+        mCAdapter.notifyDataSetChanged();
     }
 
-    public class DataBroadCastRecv extends BroadcastReceiver {
+    public class DataBroadCastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
