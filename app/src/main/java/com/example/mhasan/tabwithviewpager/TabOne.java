@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 /**
  * Created by mhasan on 4/12/2017.
+ * TabOne
  */
 
 public class TabOne extends Fragment {
@@ -47,50 +48,45 @@ public class TabOne extends Fragment {
         contactRV.setAdapter(cAdapter);
         contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         Drcv = new DataBroadCastRecv();
-       IntentFilter filter = new IntentFilter();
+        IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
         getActivity().registerReceiver(Drcv, filter);
+    }
 
+    private void updateView(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray contacts = jsonObject.getJSONArray("posts");
+            for (int i = 0; i < contacts.length(); i++) {
+                JSONObject c = contacts.getJSONObject(i);
+                String pic = c.getString("profile_pic");
+                String title = c.getString("title");
 
+                JSONObject user = c.getJSONObject("user");
+                String firstName = user.getString("first_name");
+                String lastName = user.getString("last_name");
+
+                HashMap<String, String> contact = new HashMap<>();
+                contact.put("title", title);
+                contact.put("pic", pic);
+                contact.put("fullName", firstName.concat(" ").concat(lastName));
+                contactList.add(contact);
+            }
+        } catch (final JSONException e) {
+            Log.e("Json parsing error: ", e.getMessage());
+        }
+        cAdapter.notifyDataSetChanged();
     }
 
     public class DataBroadCastRecv extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            if (intent.getAction() == "JSON_Obj_is_Send") {
+            if ("JSON_Obj_is_Send".equals(intent.getAction())) {
                 String result = intent.getStringExtra("result");
                 updateView(result);
             }
-
         }
-
-        private void updateView(String result) {
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                JSONArray contacts = jsonObject.getJSONArray("posts");
-                for (int i = 0; i < contacts.length(); i++) {
-                    JSONObject c = contacts.getJSONObject(i);
-                    String pic = c.getString("profile_pic");
-                    String title = c.getString("title");
-
-                    JSONObject user = c.getJSONObject("user");
-                    String firstName = user.getString("first_name");
-                    String lastName = user.getString("last_name");
-
-                    HashMap<String, String> contact = new HashMap<>();
-                    contact.put("title", title);
-                    contact.put("pic", pic);
-                    contact.put("fullName", firstName.concat(" ").concat(lastName));
-                    contactList.add(contact);
-                }
-            } catch (final JSONException e) {
-                Log.e("Json parsing error: ", e.getMessage());
-            }
-            cAdapter.notifyDataSetChanged();
-        }
-
     }
 }
 

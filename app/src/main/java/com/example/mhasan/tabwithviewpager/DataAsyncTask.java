@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,25 +13,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-
 
 /**
  * Created by mhasan on 4/16/2017.
+ * DataAsyncTask
  */
 
-public class DataAsyncTask extends AsyncTask<String, Void, String> {
+class DataAsyncTask extends AsyncTask<String, Void, String> {
+    private static final String KEY_INTENT_MSG = "JSON_Obj_is_Send";
 
-    public static final int CONNECTION_TIMEOUT = 30000;
-    public static final int READ_TIMEOUT = 15000;
-    ArrayList<HashMap<String, String>> contactList;
+    private static final int CONNECTION_TIMEOUT = 30000;
+    private static final int READ_TIMEOUT = 15000;
     private ProgressDialog pDialog;
-    HttpURLConnection conn;
-    URL url = null;
-    Context context;
+    private HttpURLConnection mConn;
+    private Context context;
 
-    public DataAsyncTask(Context context) {
-
+    DataAsyncTask(Context context) {
         this.context = context;
     }
 
@@ -49,7 +45,8 @@ public class DataAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String[] params) {
         StringBuilder result = null;
-        final String KEY_INTENT_MSG = "JSON_Obj_is_Send";
+
+        URL url;
         try {
             Log.d("inside doInBackground", " make call to server");
             url = new URL(params[0]);
@@ -58,20 +55,20 @@ public class DataAsyncTask extends AsyncTask<String, Void, String> {
             return e.toString();
         }
         try {
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(READ_TIMEOUT);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-            conn.setRequestMethod("GET");
+            mConn = (HttpURLConnection) url.openConnection();
+            mConn.setReadTimeout(READ_TIMEOUT);
+            mConn.setConnectTimeout(CONNECTION_TIMEOUT);
+            mConn.setRequestMethod("GET");
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("can't open connection", e.toString());
         }
         try {
-            int response_code = conn.getResponseCode();
+            int response_code = mConn.getResponseCode();
             Log.d("response_code", String.valueOf(response_code));
             if (response_code == HttpURLConnection.HTTP_OK) {
                 //READ DATA SENT FROM SERVER
-                InputStream input = conn.getInputStream();
+                InputStream input = mConn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                 result = new StringBuilder();
                 String line;
@@ -88,19 +85,21 @@ public class DataAsyncTask extends AsyncTask<String, Void, String> {
             e.printStackTrace();
             result = null;
         } finally {
-            conn.disconnect();
+            mConn.disconnect();
         }
-        Intent intent = new Intent(KEY_INTENT_MSG);
-        intent.putExtra("result", result.toString());
-        context.sendBroadcast(intent);
-        return null;
+
+        return result != null ? result.toString() : null;
     }
 
     @Override
-    protected void onPostExecute(String o) {
-        super.onPostExecute(o);
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
         pDialog.dismiss();
-
+        if (result != null) {
+            Intent intent = new Intent(KEY_INTENT_MSG);
+            intent.putExtra("result", result);
+            context.sendBroadcast(intent);
+        }
     }
 
 
