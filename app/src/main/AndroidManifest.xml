@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mhasan.tabwithviewpager">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
@@ -18,13 +19,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <receiver android:name=".DataBroadCastRecv" android:exported="true">
-                <intent-filter>
-                    <action android:name="JSON_Obj_is_Send" />
-                </intent-filter>
-            </receiver>
-        </activity>
 
+        </activity>
+        <service
+            android:name=".MyService"
+            android:enabled="true"></service>
     </application>
 
 </manifest>

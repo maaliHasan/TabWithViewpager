@@ -45,10 +45,13 @@ public class TabOne extends Fragment {
         mCAdapter = new AdapterContact(getActivity(), contactList);
         mContactRV.setAdapter(mCAdapter);
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-        DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
+       /* DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
         getActivity().registerReceiver(mDBR, filter);
+*/
+
+        getActivity().startService(new Intent(getActivity(), MyService.class));
     }
 
     private void updateView(String result) {

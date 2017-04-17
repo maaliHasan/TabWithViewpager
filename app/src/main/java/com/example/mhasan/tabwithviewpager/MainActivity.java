@@ -21,13 +21,7 @@ public class MainActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
-    private DataAsyncTask mAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +32,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mAsyncTask = (DataAsyncTask) new DataAsyncTask(this).execute("https://api.myjson.com/bins/n7vjb");
+          SectionsPagerAdapter    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+       // new DataAsyncTask(this).execute("https://api.myjson.com/bins/n7vjb");
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        /*
+      The {@link ViewPager} that will host the section contents.
+     */
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -80,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -92,14 +89,13 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    TabOne tab1 = new TabOne();
-                    return tab1;
+                    return new TabOne();
                 case 1:
-                    TabTwo tab2 = new TabTwo();
-                    return tab2;
+                    return new TabTwo();
+
                 case 2:
-                    TabThree tab3 = new TabThree();
-                    return tab3;
+                    return new TabThree();
+
             }
             return null;
         }
