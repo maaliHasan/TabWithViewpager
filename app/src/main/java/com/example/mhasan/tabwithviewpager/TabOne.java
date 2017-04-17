@@ -1,7 +1,9 @@
 package com.example.mhasan.tabwithviewpager;
 
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,13 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,6 +30,7 @@ public class TabOne extends Fragment {
     ArrayList<HashMap<String, String>> contactList;
     private RecyclerView contactRV;
     private AdapterContact cAdapter;
+    private DataBroadCastRecv Drcv;
 
     @Nullable
     @Override
@@ -50,104 +46,53 @@ public class TabOne extends Fragment {
         cAdapter = new AdapterContact(getActivity(), contactList);
         contactRV.setAdapter(cAdapter);
         contactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-        new GetData().execute("https://api.myjson.com/bins/n7vjb");
+        Drcv = new DataBroadCastRecv();
+       IntentFilter filter = new IntentFilter();
+        filter.addAction("JSON_Obj_is_Send");
+        getActivity().registerReceiver(Drcv, filter);
+
+
     }
 
-    public class GetData extends AsyncTask<String, Void, String> {
-        public static final int CONNECTION_TIMEOUT = 30000;
-        public static final int READ_TIMEOUT = 15000;
-        private ProgressDialog pDialog;
-        HttpURLConnection conn;
-        URL url = null;
+    public class DataBroadCastRecv extends BroadcastReceiver {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // showing progress dialog
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Loading");
-            pDialog.setCancelable(false);
-            pDialog.show();
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction() == "JSON_Obj_is_Send") {
+                String result = intent.getStringExtra("result");
+                updateView(result);
+            }
+
         }
 
-        @Override
-        protected String doInBackground(String[] params) {
-            StringBuilder result = null;
+        private void updateView(String result) {
             try {
-                Log.d("inside doInBackground", " make call to server");
-                url = new URL(params[0]);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return e.toString();
-            }
-            try {
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("GET");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("can't open connection", e.toString());
-            }
-            try {
-                int response_code = conn.getResponseCode();
-                Log.d("response_code", String.valueOf(response_code));
-                if (response_code == HttpURLConnection.HTTP_OK) {
-                    //READ DATA SENT FROM SERVER
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    result = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray contacts = jsonObject.getJSONArray("posts");
+                for (int i = 0; i < contacts.length(); i++) {
+                    JSONObject c = contacts.getJSONObject(i);
+                    String pic = c.getString("profile_pic");
+                    String title = c.getString("title");
 
-                    }
-                    Log.d("result", result.toString());
-                } else {
-                    Log.d("READ DATA FROM SERVER", "Can't read data");
-                    result = null;
+                    JSONObject user = c.getJSONObject("user");
+                    String firstName = user.getString("first_name");
+                    String lastName = user.getString("last_name");
+
+                    HashMap<String, String> contact = new HashMap<>();
+                    contact.put("title", title);
+                    contact.put("pic", pic);
+                    contact.put("fullName", firstName.concat(" ").concat(lastName));
+                    contactList.add(contact);
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                result = null;
-            } finally {
-                conn.disconnect();
+            } catch (final JSONException e) {
+                Log.e("Json parsing error: ", e.getMessage());
             }
-            return result == null ? null : result.toString();
+            cAdapter.notifyDataSetChanged();
         }
 
-        @Override
-        protected void onPostExecute(String o) {
-            super.onPostExecute(o);
-            pDialog.dismiss();
-            updateView(o);
-        }
-    }
-
-    private void updateView(String obj) {
-        try {
-            JSONObject jsonObject = new JSONObject(obj);
-            JSONArray contacts = jsonObject.getJSONArray("posts");
-            for (int i = 0; i < contacts.length(); i++) {
-                JSONObject c = contacts.getJSONObject(i);
-                String pic = c.getString("profile_pic");
-                String title = c.getString("title");
-
-                JSONObject user = c.getJSONObject("user");
-                String firstName = user.getString("first_name");
-                String lastName = user.getString("last_name");
-
-                HashMap<String, String> contact = new HashMap<>();
-                contact.put("title", title);
-                contact.put("pic", pic);
-                contact.put("fullName", firstName.concat(" ").concat(lastName));
-                contactList.add(contact);
-            }
-        } catch (final JSONException e) {
-            Log.e("Json parsing error: ", e.getMessage());
-        }
-        cAdapter.notifyDataSetChanged();
     }
 }
+
+
 

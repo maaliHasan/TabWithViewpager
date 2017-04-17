@@ -18,7 +18,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <receiver android:name=".DataBroadCastRecv" android:exported="true">
+                <intent-filter>
+                    <action android:name="JSON_Obj_is_Send" />
+                </intent-filter>
+            </receiver>
         </activity>
+
     </application>
 
 </manifest>

@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private DataAsyncTask mAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+        mAsyncTask = (DataAsyncTask) new DataAsyncTask(this).execute("https://api.myjson.com/bins/n7vjb");
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -89,18 +90,18 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position){
+            switch (position) {
                 case 0:
-                    TabOne tab1= new TabOne();
+                    TabOne tab1 = new TabOne();
                     return tab1;
                 case 1:
-                    TabTwo tab2= new TabTwo();
+                    TabTwo tab2 = new TabTwo();
                     return tab2;
                 case 2:
-                    TabThree tab3= new TabThree();
-                    return  tab3;
+                    TabThree tab3 = new TabThree();
+                    return tab3;
             }
-           return null;
+            return null;
         }
 
         @Override
