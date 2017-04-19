@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.Iterator;
 
 /**
  * Created by mhasan on 4/12/2017.
@@ -28,8 +28,10 @@ import java.util.HashMap;
  */
 
 public class TabOne extends Fragment {
-    ArrayList<HashMap<String, String>> contactList;
+    // ArrayList<HashMap<String, String>> contactList;
+
     private AdapterContact mCAdapter;
+    ArrayList<User> contactList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -45,19 +47,22 @@ public class TabOne extends Fragment {
         mCAdapter = new AdapterContact(getActivity(), contactList);
         mContactRV.setAdapter(mCAdapter);
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        getActivity().startService(new Intent(getActivity(), MyService.class));
         DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
         getActivity().registerReceiver(mDBR, filter);
+
+        getActivity().startService(new Intent(getActivity(), MyService.class));
+
     }
 
     private void updateView(String result) {
+
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray contacts = jsonObject.getJSONArray("posts");
             for (int i = 0; i < contacts.length(); i++) {
+                User userData = new User();
                 JSONObject c = contacts.getJSONObject(i);
                 String pic = c.getString("profile_pic");
                 String title = c.getString("title");
@@ -66,15 +71,23 @@ public class TabOne extends Fragment {
                 String firstName = user.getString("first_name");
                 String lastName = user.getString("last_name");
 
-                HashMap<String, String> contact = new HashMap<>();
-                contact.put("title", title);
-                contact.put("pic", pic);
-                contact.put("fullName", firstName.concat(" ").concat(lastName));
-                contactList.add(contact);
+                JSONArray images = c.getJSONArray("images");
+                for (int j = 0; j < images.length(); j++) {
+                    userData.images[j] = images.optString(j);
+                }
+                userData.firstName = firstName;
+                userData.lastName = lastName;
+                userData.fullName = firstName.concat(" ").concat(lastName);
+                userData.title = title;
+                userData.profilePic = pic;
+                contactList.add(userData);
+                Log.d("profilePic", userData.fullName);
             }
         } catch (final JSONException e) {
             Log.e("Json parsing error: ", e.getMessage());
         }
+        Log.d("contactList", String.valueOf(contactList));
+
         mCAdapter.notifyDataSetChanged();
     }
 
