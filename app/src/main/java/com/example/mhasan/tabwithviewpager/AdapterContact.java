@@ -20,35 +20,45 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * AdapterContact
  */
 
-class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
     private LayoutInflater inflater;
-    private Context context;
+    private Context mContext;
     private ArrayList<User> FinalContactList;
 
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //int itemPostion=mCont;
+        }
+    };
+
     AdapterContact(Context context, ArrayList<User> contactList) {
-        this.context = context;
-        inflater = LayoutInflater.from(context);
+        this.mContext = context;
+        inflater = LayoutInflater.from(mContext);
         FinalContactList = contactList;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.container_data, parent, false);
-        View view2 = inflater.inflate(R.layout.container_data2, parent, false);
-        View view3 = inflater.inflate(R.layout.container_data3, parent, false);
+    public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case 1:
+                View view = inflater.inflate(R.layout.container_data, parent, false);
+                view.setOnClickListener(onClickListener);
                 return new DataHolder(view);
             case 2:
+                View view2 = inflater.inflate(R.layout.container_data2, parent, false);
+                view2.setOnClickListener(onClickListener);
                 return new DataHolder2(view2);
             case 3:
+                View view3 = inflater.inflate(R.layout.container_data3, parent, false);
+                view3.setOnClickListener(onClickListener);
                 return new DataHolder3(view3);
         }
         return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(MyHolder holder, int position) {
         int type = getItemViewType(position);
         Log.d("view type", String.valueOf(type));
         switch (type) {
@@ -57,9 +67,13 @@ class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 User current = FinalContactList.get(position);
                 holder1.fullName.setText(current.fullName);
                 holder1.title.setText(current.title);
-                Glide.with(context).load(current.profilePic)
+                Glide.with(mContext)
+                        .load(current.profilePic)
+                        .centerCrop()
                         .into(holder1.pic);
-                Glide.with(context).load(current.images.get(0))
+                Glide.with(mContext)
+                        .load(current.images.get(0))
+                        .centerCrop()
                         .into(holder1.img1);
                 break;
             case 2:
@@ -67,11 +81,17 @@ class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 User current2 = FinalContactList.get(position);
                 holder2.fullName.setText(current2.fullName);
                 holder2.title.setText(current2.title);
-                Glide.with(context).load(current2.profilePic)
+                Glide.with(mContext)
+                        .load(current2.profilePic)
+                        .centerCrop()
                         .into(holder2.pic);
-                Glide.with(context).load(current2.images.get(0))
+                Glide.with(mContext)
+                        .load(current2.images.get(0))
+                        .centerCrop()
                         .into(holder2.img1);
-                Glide.with(context).load(current2.images.get(1))
+                Glide.with(mContext)
+                        .load(current2.images.get(1))
+                        .centerCrop()
                         .into(holder2.img2);
                 break;
             case 3:
@@ -79,13 +99,21 @@ class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 User current3 = FinalContactList.get(position);
                 holder3.fullName.setText(current3.fullName);
                 holder3.title.setText(current3.title);
-                Glide.with(context).load(current3.profilePic)
+                Glide.with(mContext)
+                        .load(current3.profilePic)
+                        .centerCrop()
                         .into(holder3.pic);
-                Glide.with(context).load(current3.images.get(0))
+                Glide.with(mContext)
+                        .load(current3.images.get(0))
+                        .centerCrop()
                         .into(holder3.img1);
-                Glide.with(context).load(current3.images.get(1))
+                Glide.with(mContext)
+                        .load(current3.images.get(1))
+                        .centerCrop()
                         .into(holder3.img2);
-                Glide.with(context).load(current3.images.get(2))
+                Glide.with(mContext)
+                        .load(current3.images.get(2))
+                        .centerCrop()
                         .into(holder3.img3);
                 break;
         }
@@ -108,48 +136,45 @@ class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return 3;
     }
 
-    private class DataHolder extends RecyclerView.ViewHolder {
+    class MyHolder extends RecyclerView.ViewHolder {
         TextView fullName, title;
         CircleImageView pic;
+
+        MyHolder(View itemView) {
+            super(itemView);
+
+            fullName = (TextView) itemView.findViewById(R.id.fullName);
+            title = (TextView) itemView.findViewById(R.id.title);
+            pic = (CircleImageView) itemView.findViewById(R.id.pic);
+        }
+    }
+
+    private class DataHolder extends MyHolder {
         ImageView img1;
 
         DataHolder(View itemView) {
             super(itemView);
-            fullName = (TextView) itemView.findViewById(R.id.fullName);
-            title = (TextView) itemView.findViewById(R.id.title);
-            pic = (CircleImageView) itemView.findViewById(R.id.pic);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
         }
     }
 
 
-    private class DataHolder2 extends RecyclerView.ViewHolder {
-        TextView fullName, title;
-        CircleImageView pic;
+    private class DataHolder2 extends MyHolder {
         ImageView img1, img2;
 
         DataHolder2(View itemView) {
             super(itemView);
-            fullName = (TextView) itemView.findViewById(R.id.fullName);
-            title = (TextView) itemView.findViewById(R.id.title);
-            pic = (CircleImageView) itemView.findViewById(R.id.pic);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
             img2 = (ImageView) itemView.findViewById(R.id.image2);
-
         }
 
     }
 
-    private class DataHolder3 extends RecyclerView.ViewHolder {
-        private TextView fullName, title;
-        private CircleImageView pic;
+    private class DataHolder3 extends MyHolder {
         private ImageView img1, img2, img3;
 
         DataHolder3(View itemView) {
             super(itemView);
-            fullName = (TextView) itemView.findViewById(R.id.fullName);
-            title = (TextView) itemView.findViewById(R.id.title);
-            pic = (CircleImageView) itemView.findViewById(R.id.pic);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
             img2 = (ImageView) itemView.findViewById(R.id.image2);
             img3 = (ImageView) itemView.findViewById(R.id.image3);
