@@ -19,8 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Created by mhasan on 4/12/2017.
@@ -47,6 +45,7 @@ public class TabOne extends Fragment {
         mCAdapter = new AdapterContact(getActivity(), contactList);
         mContactRV.setAdapter(mCAdapter);
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
@@ -73,7 +72,7 @@ public class TabOne extends Fragment {
 
                 JSONArray images = c.getJSONArray("images");
                 for (int j = 0; j < images.length(); j++) {
-                    userData.images[j] = images.optString(j);
+                    userData.images.add(images.optString(j));
                 }
                 userData.firstName = firstName;
                 userData.lastName = lastName;
@@ -92,7 +91,6 @@ public class TabOne extends Fragment {
     }
 
     public class DataBroadCastReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("JSON_Obj_is_Send".equals(intent.getAction())) {
