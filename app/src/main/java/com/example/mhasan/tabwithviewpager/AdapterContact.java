@@ -97,7 +97,6 @@ class AdapterContact extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return FinalContactList.size();
     }
 
-
     @Override
     public int getItemViewType(int position) {
         Log.d("user images ", String.valueOf(FinalContactList.get(position).images.size()));
