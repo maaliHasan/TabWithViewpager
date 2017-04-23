@@ -1,5 +1,6 @@
 package com.example.mhasan.tabwithviewpager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,13 +8,14 @@ import java.util.ArrayList;
  * User
  */
 
-public class User {
+public class User implements Serializable {
     public String firstName;
     public String lastName;
     public String title;
+    public int id;
     public String profilePic;
-  //  public String[] images= new String[];
-    public ArrayList<String> images= new ArrayList<String>();
-    public String  fullName;
+    public String description;
+    public ArrayList<String> images = new ArrayList<String>();
+    public String fullName;
 }
 

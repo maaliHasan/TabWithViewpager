@@ -13,11 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -25,9 +27,7 @@ import java.util.ArrayList;
  * TabOne
  */
 
-public class TabOne extends Fragment {
-    // ArrayList<HashMap<String, String>> contactList;
-
+public class TabOne extends Fragment implements AdapterContact.OnItemClickListener {
     private AdapterContact mCAdapter;
     ArrayList<User> contactList = new ArrayList<>();
 
@@ -43,6 +43,7 @@ public class TabOne extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView mContactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
         mCAdapter = new AdapterContact(getActivity(), contactList);
+        mCAdapter.setOnItemClickedListener(this);
         mContactRV.setAdapter(mCAdapter);
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -65,10 +66,13 @@ public class TabOne extends Fragment {
                 JSONObject c = contacts.getJSONObject(i);
                 String pic = c.getString("profile_pic");
                 String title = c.getString("title");
+                int id =c.getInt("id");
+                String description= c.getString("description");
 
                 JSONObject user = c.getJSONObject("user");
                 String firstName = user.getString("first_name");
                 String lastName = user.getString("last_name");
+
 
                 JSONArray images = c.getJSONArray("images");
                 for (int j = 0; j < images.length(); j++) {
@@ -77,6 +81,8 @@ public class TabOne extends Fragment {
                 userData.firstName = firstName;
                 userData.lastName = lastName;
                 userData.fullName = firstName.concat(" ").concat(lastName);
+                userData.description=description;
+                userData.id=id;
                 userData.title = title;
                 userData.profilePic = pic;
                 contactList.add(userData);
@@ -99,6 +105,14 @@ public class TabOne extends Fragment {
             }
 
         }
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        Toast.makeText(getContext(), Integer.toString(position), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), UserData.class);
+        intent.putExtra("UserInfo",contactList.get(position));
+        startActivity(intent);
     }
 }
 

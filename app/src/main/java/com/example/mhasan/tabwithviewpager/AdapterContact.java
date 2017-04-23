@@ -1,6 +1,7 @@
 package com.example.mhasan.tabwithviewpager;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by mhasan on 4/16/2017.
  * AdapterContact
+ *
  */
 
 class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
@@ -25,12 +26,16 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
     private Context mContext;
     private ArrayList<User> FinalContactList;
 
-    private final View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //int itemPostion=mCont;
-        }
-    };
+    protected interface OnItemClickListener {
+        void onItemClicked(int position);
+    }
+
+    private OnItemClickListener mListener;
+
+    void setOnItemClickedListener(OnItemClickListener listener) {
+        this.mListener = listener;
+    }
+
 
     AdapterContact(Context context, ArrayList<User> contactList) {
         this.mContext = context;
@@ -43,15 +48,12 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
         switch (viewType) {
             case 1:
                 View view = inflater.inflate(R.layout.container_data, parent, false);
-                view.setOnClickListener(onClickListener);
                 return new DataHolder(view);
             case 2:
                 View view2 = inflater.inflate(R.layout.container_data2, parent, false);
-                view2.setOnClickListener(onClickListener);
                 return new DataHolder2(view2);
             case 3:
                 View view3 = inflater.inflate(R.layout.container_data3, parent, false);
-                view3.setOnClickListener(onClickListener);
                 return new DataHolder3(view3);
         }
         return null;
@@ -136,16 +138,22 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
         return 3;
     }
 
-    class MyHolder extends RecyclerView.ViewHolder {
+    class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        CardView mCardView;
         TextView fullName, title;
         CircleImageView pic;
 
         MyHolder(View itemView) {
             super(itemView);
-
             fullName = (TextView) itemView.findViewById(R.id.fullName);
             title = (TextView) itemView.findViewById(R.id.title);
             pic = (CircleImageView) itemView.findViewById(R.id.pic);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onItemClicked(getAdapterPosition());
+
         }
     }
 
@@ -154,6 +162,8 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
 
         DataHolder(View itemView) {
             super(itemView);
+            mCardView = (CardView) itemView.findViewById(R.id.card_view);
+            mCardView.setOnClickListener(this);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
         }
     }
@@ -164,6 +174,8 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
 
         DataHolder2(View itemView) {
             super(itemView);
+            mCardView = (CardView) itemView.findViewById(R.id.card_view);
+            mCardView.setOnClickListener(this);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
             img2 = (ImageView) itemView.findViewById(R.id.image2);
         }
@@ -175,6 +187,8 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
 
         DataHolder3(View itemView) {
             super(itemView);
+            mCardView = (CardView) itemView.findViewById(R.id.card_view);
+            mCardView.setOnClickListener(this);
             img1 = (ImageView) itemView.findViewById(R.id.image1);
             img2 = (ImageView) itemView.findViewById(R.id.image2);
             img3 = (ImageView) itemView.findViewById(R.id.image3);
