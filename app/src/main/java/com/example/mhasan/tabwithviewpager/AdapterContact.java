@@ -26,7 +26,7 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
     private Context mContext;
     private ArrayList<User> FinalContactList;
 
-    protected interface OnItemClickListener {
+     interface OnItemClickListener {
         void onItemClicked(int position);
     }
 
@@ -35,7 +35,6 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
     void setOnItemClickedListener(OnItemClickListener listener) {
         this.mListener = listener;
     }
-
 
     AdapterContact(Context context, ArrayList<User> contactList) {
         this.mContext = context;
@@ -168,7 +167,6 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
         }
     }
 
-
     private class DataHolder2 extends MyHolder {
         ImageView img1, img2;
 
@@ -181,7 +179,6 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
         }
 
     }
-
     private class DataHolder3 extends MyHolder {
         private ImageView img1, img2, img3;
 

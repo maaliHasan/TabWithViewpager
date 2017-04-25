@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -51,7 +50,6 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
         getActivity().registerReceiver(mDBR, filter);
-
         getActivity().startService(new Intent(getActivity(), MyService.class));
 
     }
@@ -66,8 +64,8 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
                 JSONObject c = contacts.getJSONObject(i);
                 String pic = c.getString("profile_pic");
                 String title = c.getString("title");
-                int id =c.getInt("id");
-                String description= c.getString("description");
+                int id = c.getInt("id");
+                String description = c.getString("description");
 
                 JSONObject user = c.getJSONObject("user");
                 String firstName = user.getString("first_name");
@@ -81,8 +79,8 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
                 userData.firstName = firstName;
                 userData.lastName = lastName;
                 userData.fullName = firstName.concat(" ").concat(lastName);
-                userData.description=description;
-                userData.id=id;
+                userData.description = description;
+                userData.id = id;
                 userData.title = title;
                 userData.profilePic = pic;
                 contactList.add(userData);
@@ -111,7 +109,7 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
     public void onItemClicked(int position) {
         Toast.makeText(getContext(), Integer.toString(position), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getActivity(), UserData.class);
-        intent.putExtra("UserInfo",contactList.get(position));
+        intent.putExtra("UserInfo", contactList.get(position));
         startActivity(intent);
     }
 }

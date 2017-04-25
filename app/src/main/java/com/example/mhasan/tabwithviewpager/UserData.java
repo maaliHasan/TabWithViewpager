@@ -12,9 +12,7 @@ import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserData extends AppCompatActivity {
-
     User mUser;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,17 +37,16 @@ public class UserData extends AppCompatActivity {
                 .centerCrop()
                 .into(pic);
 
-        LinearLayout linearLayout  = (LinearLayout)findViewById(R.id.linearLayout);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-              900  , 300,1.0f
-        );//LinearLayout.LayoutParams.WRAP_CONTENT
+                700, 350, 1.0f
+        );
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         int imagesNum = mUser.images.size();
-        for(int i=0;i<imagesNum;i++){
-            Log.d("imagesNum",String.valueOf(i));
+        for (int i = 0; i < imagesNum; i++) {
+            Log.d("imagesNum", String.valueOf(i));
             ImageView img1 = new ImageView(this);
             img1.setLayoutParams(params);
-
             Glide.with(getBaseContext())
                     .load(mUser.images.get(i))
                     .centerCrop()
