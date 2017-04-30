@@ -12,11 +12,11 @@ import android.util.Log;
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
-    public static final int DATABASE_VERSION = 3;
+    private  User mUser;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "usersTest.db";
     public static final String TABLE_NAME = "user";
-    public static final String TABLE_DEL = "user";
+    public static final String TABLE_DEL = "photo";
     private static final String PHOTO_TABLE_CREATE = "create table photo (photo_id integer primary key autoincrement, IMG text not null,user_id INTEGER, FOREIGN KEY (user_id) REFERENCES user (ID));";
     private static final String USER_TABLE_CREATE = "create table " + TABLE_NAME + " (ID INTEGER PRIMARY KEY ,NAME TEXT,TITLE TEXT,DESCRIPTION TEXT,PIC TEXT )";
 
@@ -40,8 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertData(int id, String name, String title, String des, String pic) {
-
+   /* public boolean insertData(int id, String name, String title, String des, String pic) {
         Log.d("inside insert Data", name);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -55,8 +54,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         else
             return true;
-      //  ContentValues photoValues= new ContentValues();
-       // long result = db.insert("photo", null, contentValues);
+
+    }*/
+
+    public boolean insertData(User user) {
+       this.mUser= user;
+        SQLiteDatabase Db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        ContentValues photoValues = new ContentValues();
+        contentValues.put("ID", mUser.id);
+        contentValues.put("NAME", mUser.fullName);
+        contentValues.put("TITLE", mUser.title);
+        contentValues.put("DESCRIPTION", mUser.description);
+        contentValues.put("PIC", mUser.profilePic);
+        long result = Db.insert(TABLE_NAME, null, contentValues);
+
+        int size= mUser.images.size();
+        for (int j = 0; j <size; j++) {
+          String img= mUser.images.get(j);
+            photoValues.put("img",img);
+            photoValues.put("user_id",mUser.id);
+        }
+        long result2 = Db.insert("photo", null, photoValues);
+
+        if (result == -1 | result2 == -1)
+            return false;
+        else
+            return true;
+      /*
+        return  true;*/
 
     }
 }

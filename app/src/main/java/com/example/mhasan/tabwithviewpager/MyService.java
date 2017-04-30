@@ -157,19 +157,18 @@ public class MyService extends Service {
                 JSONObject user = c.getJSONObject("user");
                 String firstName = user.getString("first_name");
                 String lastName = user.getString("last_name");
-
+                String fullName = firstName.concat(" ").concat(lastName);
                 JSONArray images = c.getJSONArray("images");
+
                 for (int j = 0; j < images.length(); j++) {
                     userData.images.add(images.optString(j));
                 }
-                String fullName = firstName.concat(" ").concat(lastName);
-                /*String img =userData.images.get(0);
-                String img1 =userData.images.get(1);
-               String img2 =userData.images.get(2);
-                Log.d("fullName",img);
-                Log.d("img1",img1);
-             //   Log.d("img2",img2);*/
-                Boolean res = mDB.insertData(id, fullName, title, description, pic);
+                userData.id=id;
+                userData.profilePic=pic;
+                userData.title=title;
+                userData.description=description;
+                userData.firstName=firstName;
+                Boolean res = mDB.insertData(userData);
                 Log.d("res of inserting data", String.valueOf(res));
             }
         } catch (final JSONException e) {
