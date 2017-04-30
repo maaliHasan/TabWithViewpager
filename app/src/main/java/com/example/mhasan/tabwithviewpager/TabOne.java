@@ -71,7 +71,6 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
                 String firstName = user.getString("first_name");
                 String lastName = user.getString("last_name");
 
-
                 JSONArray images = c.getJSONArray("images");
                 for (int j = 0; j < images.length(); j++) {
                     userData.images.add(images.optString(j));

@@ -11,6 +11,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.os.Process;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by mhasan on 4/17/2017.
@@ -29,6 +34,8 @@ public class MyService extends Service {
     private static final int READ_TIMEOUT = 15000;
     private static final String KEY_INTENT_MSG = "JSON_Obj_is_Send";
     private HttpURLConnection mConn;
+    private DatabaseHelper mDB;
+    private ArrayList<User> contactList = new ArrayList<>();
     private ServiceHandler mServiceHandler;
 
     @Nullable
@@ -103,6 +110,7 @@ public class MyService extends Service {
     public void onCreate() {
         HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
+        mDB = new DatabaseHelper(this);
         thread.start();
         Looper mServiceLooper = thread.getLooper();
         mServiceHandler = new ServiceHandler(mServiceLooper);
@@ -124,11 +132,50 @@ public class MyService extends Service {
 
     private void sendServiceBroadcast(String result) {
         if (result != null) {
+            saveData(result);
             Intent intent = new Intent(KEY_INTENT_MSG);
             intent.putExtra("result", result);
             sendBroadcast(intent);
 
         }
+
+    }
+
+    private void saveData(String result) {
+        Log.d("inside saveData", "inside saveData");
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray contacts = jsonObject.getJSONArray("posts");
+            for (int i = 0; i < contacts.length(); i++) {
+                User userData = new User();
+                JSONObject c = contacts.getJSONObject(i);
+                String pic = c.getString("profile_pic");
+                String title = c.getString("title");
+                int id = c.getInt("id");
+                String description = c.getString("description");
+
+                JSONObject user = c.getJSONObject("user");
+                String firstName = user.getString("first_name");
+                String lastName = user.getString("last_name");
+
+                JSONArray images = c.getJSONArray("images");
+                for (int j = 0; j < images.length(); j++) {
+                    userData.images.add(images.optString(j));
+                }
+                String fullName = firstName.concat(" ").concat(lastName);
+                /*String img =userData.images.get(0);
+                String img1 =userData.images.get(1);
+               String img2 =userData.images.get(2);
+                Log.d("fullName",img);
+                Log.d("img1",img1);
+             //   Log.d("img2",img2);*/
+                Boolean res = mDB.insertData(id, fullName, title, description, pic);
+                Log.d("res of inserting data", String.valueOf(res));
+            }
+        } catch (final JSONException e) {
+            Log.e("Json parsing error: ", e.getMessage());
+        }
+
 
     }
 

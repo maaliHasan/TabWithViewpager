@@ -1,5 +1,7 @@
 package com.example.mhasan.tabwithviewpager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,11 +15,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserData extends AppCompatActivity {
     User mUser;
+    SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_data);
+        mSharedPreferences=getSharedPreferences("DataPrefrences", Context.MODE_PRIVATE);
         getUserData();
     }
 
@@ -52,6 +56,9 @@ public class UserData extends AppCompatActivity {
                     .centerCrop()
                     .into(img1);
             linearLayout.addView(img1);
+            SharedPreferences.Editor editor=mSharedPreferences.edit();
+            editor.putString("User",mUser.fullName);
+            editor.apply();
         }
 
 
