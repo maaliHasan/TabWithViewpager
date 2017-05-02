@@ -134,7 +134,7 @@ public class MyService extends Service {
         if (result != null) {
             saveData(result);
             Intent intent = new Intent(KEY_INTENT_MSG);
-            intent.putExtra("result", result);
+            intent.putExtra("result", "data saved into DB");
             sendBroadcast(intent);
 
         }
@@ -142,12 +142,12 @@ public class MyService extends Service {
     }
 
     private void saveData(String result) {
-        Log.d("inside saveData", "inside saveData");
+        Log.d("saveData into DB", "inside saveData");
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray contacts = jsonObject.getJSONArray("posts");
             for (int i = 0; i < contacts.length(); i++) {
-                User userData = new User();
+                User mUser = new User();
                 JSONObject c = contacts.getJSONObject(i);
                 String pic = c.getString("profile_pic");
                 String title = c.getString("title");
@@ -161,14 +161,14 @@ public class MyService extends Service {
                 JSONArray images = c.getJSONArray("images");
 
                 for (int j = 0; j < images.length(); j++) {
-                    userData.images.add(images.optString(j));
+                    mUser.images.add(images.optString(j));
                 }
-                userData.id=id;
-                userData.profilePic=pic;
-                userData.title=title;
-                userData.description=description;
-                userData.firstName=firstName;
-                Boolean res = mDB.insertData(userData);
+                mUser.id=id;
+                mUser.profilePic=pic;
+                mUser.title=title;
+                mUser.description=description;
+                mUser.fullName=fullName;
+                Boolean res = mDB.insertData(mUser);
                 Log.d("res of inserting data", String.valueOf(res));
             }
         } catch (final JSONException e) {

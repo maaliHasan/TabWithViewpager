@@ -24,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
     private LayoutInflater inflater;
     private Context mContext;
-    private ArrayList<User> FinalContactList;
+    public ArrayList<User> FinalContactList;
 
      interface OnItemClickListener {
         void onItemClicked(int position);
@@ -40,6 +40,7 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
         this.mContext = context;
         inflater = LayoutInflater.from(mContext);
         FinalContactList = contactList;
+        Log.d("FinalContactList",String.valueOf(FinalContactList));
     }
 
     @Override
