@@ -23,6 +23,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_DEL = "photo";
     private static final String PHOTO_TABLE_CREATE = "create table photo (photo_id INTEGER PRIMARY KEY, IMG text not null,user_id INTEGER, FOREIGN KEY (user_id) REFERENCES user (ID));";
     private static final String USER_TABLE_CREATE = "create table " + TABLE_NAME + " (ID INTEGER PRIMARY KEY ,NAME TEXT,TITLE TEXT,DESCRIPTION TEXT,PIC TEXT )";
+    private static final String DATA_RETRIEVE = "SELECT user.ID ,user.NAME ,user.TITLE ,user.DESCRIPTION ,user.PIC , photo.IMG\n" +
+            "FROM 'user'  LEFT   JOIN  'photo' ON user.ID = photo.user_id";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,10 +78,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    /**
-     * get data from UserTest DB
-     */
-
     public ArrayList<User> getData() {
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -97,6 +95,7 @@ FROM 'user'  LEFT   JOIN  'photo' ON user.ID = photo.user_id*/
         Cursor userCursor = db.query("user", serProjection, null, null, null, null, null
         );
         ArrayList<User> users = new ArrayList<>();
+        ArrayList<User> usersWithImg = new ArrayList<>();
         while (userCursor.moveToNext()) {
             User mUser = new User();
             mUser.fullName = userCursor.getString(userCursor.getColumnIndexOrThrow("NAME"));
@@ -107,9 +106,66 @@ FROM 'user'  LEFT   JOIN  'photo' ON user.ID = photo.user_id*/
             users.add(mUser);
         }
         Log.d("retrieved result", String.valueOf(users));
+        userCursor.close();
+
+
+        for(User obj:users){
+            int userID= obj.id;
+            Cursor photoCursor= db.rawQuery("SELECT photo.IMG FROM 'photo'   WHERE user_ID= '"+userID+"'",null);
+            while (photoCursor.moveToNext()){
+                String img= photoCursor.getString(photoCursor.getColumnIndexOrThrow("IMG"));
+                obj.images.add(img);
+
+            }
+            usersWithImg.add(obj);
+
+        }
+
+        return usersWithImg;
+    }
+
+
+
+    /**
+     * get data from UserTest DB
+
+
+    public ArrayList<User> getData() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor userCursor = db.rawQuery(DATA_RETRIEVE, null);
+        ArrayList<User> users = new ArrayList<>();
+        while (userCursor.moveToNext()) {
+            User mUser = new User();
+            String nextUser = userCursor.getString(userCursor.getColumnIndexOrThrow("NAME"));
+            mUser.id = userCursor.getInt(userCursor.getColumnIndexOrThrow("ID"));
+            boolean included = false;
+            for (User obj : users) {
+                mUser.fullName = userCursor.getString(userCursor.getColumnIndexOrThrow("NAME"));
+                mUser.title = userCursor.getString(userCursor.getColumnIndexOrThrow("TITLE"));
+                mUser.description = userCursor.getString(userCursor.getColumnIndexOrThrow("DESCRIPTION"));
+                mUser.profilePic = userCursor.getString(userCursor.getColumnIndexOrThrow("PIC"));
+                mUser.id = userCursor.getInt(userCursor.getColumnIndexOrThrow("ID"));
+                mUser.images.add("IMG");
+                if (obj.fullName.equals(nextUser)) {
+                    included = true;
+                    break;
+                }
+                if (!included) {
+                    users.add(mUser);
+
+                }
+            }
+
+
+        }
+        Log.d("retrieved result", String.valueOf(users));
 
 
         userCursor.close();
         return users;
-    }
+    }*/
+
+
 }
