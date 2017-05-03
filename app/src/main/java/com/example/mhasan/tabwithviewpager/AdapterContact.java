@@ -67,6 +67,7 @@ class AdapterContact extends RecyclerView.Adapter<AdapterContact.MyHolder> {
             case 1:
                 DataHolder holder1 = (DataHolder) holder;
                 User current = FinalContactList.get(position);
+                Log.d("current user",current.fullName);
                 holder1.fullName.setText(current.fullName);
                 holder1.title.setText(current.title);
                 Glide.with(mContext)

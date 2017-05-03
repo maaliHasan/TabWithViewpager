@@ -17,11 +17,11 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private User mUser;
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 17;
     public static final String DATABASE_NAME = "usersTest.db";
     public static final String TABLE_NAME = "user";
-    public static final String TABLE_DEL = "user";
-    private static final String PHOTO_TABLE_CREATE = "create table photo (photo_id integer primary key autoincrement, IMG text not null,user_id INTEGER, FOREIGN KEY (user_id) REFERENCES user (ID));";
+    public static final String TABLE_DEL = "photo";
+    private static final String PHOTO_TABLE_CREATE = "create table photo (photo_id INTEGER PRIMARY KEY, IMG text not null,user_id INTEGER, FOREIGN KEY (user_id) REFERENCES user (ID));";
     private static final String USER_TABLE_CREATE = "create table " + TABLE_NAME + " (ID INTEGER PRIMARY KEY ,NAME TEXT,TITLE TEXT,DESCRIPTION TEXT,PIC TEXT )";
 
     public DatabaseHelper(Context context) {
@@ -32,17 +32,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // db.execSQL("CREATE TABLE" + TABLE_NAME + "("+COL_ID+ " INTEGER PRIMARY KEY, " +COL_NAME + " TEXT," +COL_TITLE + "TEXT," +COL_DES + " TEXT," +COL_PIC + " TEXT );");
-      //  db.execSQL(USER_TABLE_CREATE);
-     //   db.execSQL(PHOTO_TABLE_CREATE);
+        //  db.execSQL(USER_TABLE_CREATE);
+        db.execSQL(PHOTO_TABLE_CREATE);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //db.execSQL("DROP TABLE IF EXISTS '" + TABLE_DEL + "'");
-      //  db.execSQL("DELETE FROM'"+TABLE_DEL+"' WHERE ID ='NULL'");
-        int id =0;
-        db.execSQL("DELETE FROM "+TABLE_DEL+" where ID='"+id+"'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_DEL + "'");
+        //  int id =0;
+        //  db.execSQL("DELETE FROM "+TABLE_DEL+" where ID='"+id+"'");
         onCreate(db);
 
     }
@@ -60,7 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("TITLE", mUser.title);
         contentValues.put("DESCRIPTION", mUser.description);
         contentValues.put("PIC", mUser.profilePic);
-//          result = Db.insert(TABLE_NAME, null, contentValues);
+//        result = Db.insert(TABLE_NAME, null, contentValues);
 
         int size = mUser.images.size();
         Log.d("size of images", Integer.toString(size));
@@ -68,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String img = mUser.images.get(j);
             photoValues.put("img", img);
             photoValues.put("user_id", mUser.id);
-         //   result2 = Db2.insert("photo", null, photoValues);
+            //   result2 = Db2.insert("photo", null, photoValues);
             Log.d("inside", String.valueOf(photoValues));
         }
 
@@ -82,32 +81,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
 
     public ArrayList<User> getData() {
-        User mUser = new User();
+
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] projection = {
+        String[] serProjection = {
                 "ID",
                 "NAME",
                 "TITLE",
                 "PIC",
                 "DESCRIPTION"
         };
+        /*SELECT user.ID ,user.NAME ,user.TITLE ,user.DESCRIPTION ,user.PIC , photo.IMG
+FROM 'user'  LEFT   JOIN  'photo' ON user.ID = photo.user_id*/
 
-        Cursor cursor = db.query("user", projection, null, null, null, null, null
+        Cursor userCursor = db.query("user", serProjection, null, null, null, null, null
         );
-        ArrayList <User>users = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            mUser.fullName = cursor.getString(cursor.getColumnIndexOrThrow("NAME"));
-            mUser.title = cursor.getString(cursor.getColumnIndexOrThrow("TITLE"));
-            mUser.description = cursor.getString(cursor.getColumnIndexOrThrow("DESCRIPTION"));
-            mUser.profilePic = cursor.getString(cursor.getColumnIndexOrThrow("PIC"));
-            mUser.id = cursor.getInt(cursor.getColumnIndexOrThrow("ID"));
+        ArrayList<User> users = new ArrayList<>();
+        while (userCursor.moveToNext()) {
+            User mUser = new User();
+            mUser.fullName = userCursor.getString(userCursor.getColumnIndexOrThrow("NAME"));
+            mUser.title = userCursor.getString(userCursor.getColumnIndexOrThrow("TITLE"));
+            mUser.description = userCursor.getString(userCursor.getColumnIndexOrThrow("DESCRIPTION"));
+            mUser.profilePic = userCursor.getString(userCursor.getColumnIndexOrThrow("PIC"));
+            mUser.id = userCursor.getInt(userCursor.getColumnIndexOrThrow("ID"));
             users.add(mUser);
         }
         Log.d("retrieved result", String.valueOf(users));
-        Log.d("size result", String.valueOf(users.size()));
 
-        cursor.close();
+
+        userCursor.close();
         return users;
     }
 }

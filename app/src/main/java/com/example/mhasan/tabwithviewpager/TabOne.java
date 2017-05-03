@@ -33,6 +33,7 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
     private AdapterContact mCAdapter;
     private DatabaseHelper mDB;
     ArrayList<User> contactList = new ArrayList<>();
+    ArrayList<User> contactRes = new ArrayList<>();
 
     @Nullable
     @Override
@@ -44,12 +45,12 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView mContactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
+     /*   RecyclerView mContactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
         mCAdapter = new AdapterContact(getActivity(), contactList);
         mCAdapter.setOnItemClickedListener(this);
         mContactRV.setAdapter(mCAdapter);
 
-        mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));*/
         mDB = new DatabaseHelper(getActivity());
         DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
@@ -59,61 +60,36 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
 
     }
 
-    private void updateView( ) {
-        contactList= mDB.getData();
+    private void updateView() {
+
+        this.contactList = mDB.getData();
+
+        RecyclerView mContactRV = (RecyclerView) getActivity().findViewById(R.id.contactList);
+        mCAdapter = new AdapterContact(getActivity(), contactList);
+        mCAdapter.setOnItemClickedListener(this);
+        mContactRV.setAdapter(mCAdapter);
+
+        mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         Log.d("contactList", String.valueOf(contactList));
-        mCAdapter.FinalContactList=contactList;
-        //mCAdapter.notifyDataSetChanged();
-/*
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray contacts = jsonObject.getJSONArray("posts");
-            for (int i = 0; i < contacts.length(); i++) {
-                User userData = new User();
-                JSONObject c = contacts.getJSONObject(i);
-                String pic = c.getString("profile_pic");
-                String title = c.getString("title");
-                int id = c.getInt("id");
-                String description = c.getString("description");
 
-                JSONObject user = c.getJSONObject("user");
-                String firstName = user.getString("first_name");
-                String lastName = user.getString("last_name");
 
-                JSONArray images = c.getJSONArray("images");
-                for (int j = 0; j < images.length(); j++) {
-                    userData.images.add(images.optString(j));
-                }
-                userData.firstName = firstName;
-                userData.lastName = lastName;
-                userData.fullName = firstName.concat(" ").concat(lastName);
-                userData.description = description;
-                userData.id = id;
-                userData.title = title;
-                userData.profilePic = pic;
-                contactList.add(userData);
-                Log.d("profilePic", userData.fullName);
-            }
-        } catch (final JSONException e) {
-            Log.e("Json parsing error: ", e.getMessage());
-        }
-
-*/
+        this.mCAdapter.notifyDataSetChanged();
 
     }
 
     public class DataBroadCastReceiver extends BroadcastReceiver {
+
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("JSON_Obj_is_Send".equals(intent.getAction())) {
-              //  String result = intent.getStringExtra("result");
-              updateView();
+                //  String result = intent.getStringExtra("result");
+                updateView();
 
             }
 
         }
     }
-
 
 
     @Override
