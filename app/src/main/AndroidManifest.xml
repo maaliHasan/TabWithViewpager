@@ -21,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.example.mhasan.tabwithviewpager.dataprovider"
+            android:name=".DataProvider"
+            android:exported="false"/>
 
         <service
             android:name=".MyService"

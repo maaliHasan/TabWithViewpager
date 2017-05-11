@@ -1,11 +1,15 @@
 package com.example.mhasan.tabwithviewpager;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +56,27 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
         mContactRV.setAdapter(mCAdapter);
 
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));*/
+        insertData();
+
+
         mDB = new DatabaseHelper(getActivity());
         DataBroadCastReceiver mDBR = new DataBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JSON_Obj_is_Send");
         getActivity().registerReceiver(mDBR, filter);
         getActivity().startService(new Intent(getActivity(), MyService.class));
+
+    }
+
+    private void insertData() {
+        ContentValues values= new ContentValues();
+        values.put("ID","12");
+        values.put("NAME", "hasan");
+        values.put("TITLE", "zxxxx");
+        values.put("DESCRIPTION", "jhjhj");
+        values.put("PIC", "https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_960_720.jpg");
+        Uri userId= getContext().getContentResolver().insert(DataProvider.CONTENT_URI,values);
+        Log.d("MainActivity",(userId.getLastPathSegment()));
 
     }
 
