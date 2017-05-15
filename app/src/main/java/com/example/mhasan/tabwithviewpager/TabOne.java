@@ -56,7 +56,7 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
         mContactRV.setAdapter(mCAdapter);
 
         mContactRV.setLayoutManager(new LinearLayoutManager(getActivity()));*/
-        insertData();
+
 
 
         mDB = new DatabaseHelper(getActivity());
@@ -68,17 +68,7 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
 
     }
 
-    private void insertData() {
-        ContentValues values= new ContentValues();
-        values.put("ID","12");
-        values.put("NAME", "hasan");
-        values.put("TITLE", "zxxxx");
-        values.put("DESCRIPTION", "jhjhj");
-        values.put("PIC", "https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_960_720.jpg");
-        Uri userId= getContext().getContentResolver().insert(DataProvider.CONTENT_URI,values);
-        Log.d("MainActivity",(userId.getLastPathSegment()));
 
-    }
 
     private void updateView() {
 

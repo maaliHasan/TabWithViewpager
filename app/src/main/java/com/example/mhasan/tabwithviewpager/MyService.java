@@ -1,7 +1,9 @@
 package com.example.mhasan.tabwithviewpager;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -163,18 +165,42 @@ public class MyService extends Service {
                 for (int j = 0; j < images.length(); j++) {
                     mUser.images.add(images.optString(j));
                 }
-                mUser.id=id;
-                mUser.profilePic=pic;
-                mUser.title=title;
-                mUser.description=description;
-                mUser.fullName=fullName;
-                Boolean res = mDB.insertData(mUser);
-                Log.d("res of inserting data", String.valueOf(res));
+                mUser.id = id;
+                mUser.profilePic = pic;
+                mUser.title = title;
+                mUser.description = description;
+                mUser.fullName = fullName;
+                insertData(mUser);
+                //  Boolean res = mDB.insertData(mUser);
+                // Log.d("res of inserting data", String.valueOf(res));
             }
         } catch (final JSONException e) {
             Log.e("Json parsing error: ", e.getMessage());
         }
 
+
+    }
+
+    private void insertData(User user) {
+        ContentValues contactValues = new ContentValues();
+        contactValues.put("ID", user.id);
+        contactValues.put("NAME", user.fullName);
+        contactValues.put("TITLE", user.title);
+        contactValues.put("DESCRIPTION", user.description);
+        contactValues.put("PIC", user.profilePic);
+        Uri userId = getContentResolver().insert(DataProvider.CONTENT_URI, contactValues);
+        Log.d("insertData", (userId.getLastPathSegment()));
+
+        ContentValues photoValues = new ContentValues();
+        int size = user.images.size();
+        Log.d("size of images", Integer.toString(size));
+        for (int j = 0; j < size; j++) {
+            String img = user.images.get(j);
+            photoValues.put("img", img);
+            photoValues.put("user_id", user.id);
+            Uri photoId = getContentResolver().insert(DataProvider.CONTENT_URI2, photoValues);
+            Log.d("insertData", (photoId.getLastPathSegment()));
+        }
 
     }
 
