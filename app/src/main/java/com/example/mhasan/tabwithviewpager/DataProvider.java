@@ -68,12 +68,12 @@ public class DataProvider extends ContentProvider {
         long _ID=0;
         switch (uriMatcher.match(uri)){
             case USER:
-                _ID  = database.insert(BASE_PATH1, null, values);
+//                _ID  = database.insert(BASE_PATH1, null, values);
                 getContext().getContentResolver().notifyChange(uri, null);
                 return Uri.parse(BASE_PATH1 + "/" + _ID);
 
             case PHOTO:
-                _ID = database.insert(BASE_PATH2, null, values);
+              //  _ID = database.insert(BASE_PATH2, null, values);
                 getContext().getContentResolver().notifyChange(uri,null);
                 return Uri.parse(BASE_PATH2+ "/" + _ID);
 

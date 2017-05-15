@@ -22,7 +22,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_DEL = "photo";
     private static final String USER_TABLE_CREATE = "create table " + TABLE_NAME + " (ID INTEGER PRIMARY KEY   ,NAME TEXT ,TITLE TEXT,DESCRIPTION TEXT,PIC TEXT )";
     private static final String PHOTO_TABLE_CREATE = "create table photo ( ID INTEGER PRIMARY KEY, IMG text  not null,user_id INTEGER, FOREIGN KEY (user_id) REFERENCES user (ID));";
-    public static final String[] ALL_COLUMNS = {"ID", "NAME", "TITLE", "DESCRIPTION", "PIC"};
+    public static final String[] ALL_COLUMNS = {"ID", "NAME", "TITLE", "DESCRIPTION", "PIC","user_id","IMG"};
 
     DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +40,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
 
     }
- 
+
 
     public ArrayList<User> getData() {
 
