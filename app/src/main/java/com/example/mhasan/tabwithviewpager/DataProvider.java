@@ -22,6 +22,11 @@ public class DataProvider extends ContentProvider {
     private static final String BASE_PATH2 = "photo";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH1);
     public static final Uri CONTENT_URI2 = Uri.parse("content://" + AUTHORITY +"/" + BASE_PATH2);
+    public static  final String mSelectionClause = "SELECT photo.IMG FROM 'photo'   WHERE user_ID=";
+    public static final  String[] photoProjection = {
+            "IMG",
+            "user_id"
+    };
     // Constant to identify the requested operation
     private static final int USER = 1;
     private static final int USER_ID = 0;
@@ -54,7 +59,19 @@ public class DataProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return database.query(DatabaseHelper.TABLE_NAME, DatabaseHelper.ALL_COLUMNS, selection, null, null, null, null);
+
+        switch(uriMatcher.match(uri)){
+            case USER:
+                return database.query(BASE_PATH1, DatabaseHelper.ALL_COLUMNS, selection, null, null, null, null);
+            case PHOTO:
+                int userID=Integer.valueOf(selection);
+                return database.rawQuery("SELECT photo.IMG FROM 'photo'   WHERE user_ID= '" + userID + "'", null);
+
+            default:
+                throw  new SQLException("Failed to get data "  );
+
+
+        }
     }
 
     @Nullable

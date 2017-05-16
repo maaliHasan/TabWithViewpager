@@ -113,14 +113,15 @@ public class TabOne extends Fragment implements AdapterContact.OnItemClickListen
             mUser.profilePic = userCursor.getString(userCursor.getColumnIndexOrThrow("PIC"));
             mUser.id = userCursor.getInt(userCursor.getColumnIndexOrThrow("ID"));
             users.add(mUser);
+            Log.d("getdata",  mUser.fullName+mUser.id);
         }
         Log.d("retrieved result", String.valueOf(users));
 
 
+
         for (User obj : users) {
             int userID = obj.id;
-            String mSelectionClause = "SELECT photo.IMG FROM 'photo'   WHERE user_ID= '" + userID + "'";
-            Cursor photoCursor = getContext().getContentResolver().query(DataProvider.CONTENT_URI2, photoProjection, mSelectionClause, null, null);
+            Cursor photoCursor = getContext().getContentResolver().query(DataProvider.CONTENT_URI2, photoProjection, String.valueOf(userID), null, null);
             while (photoCursor.moveToNext()) {
                 String img = photoCursor.getString(photoCursor.getColumnIndexOrThrow("IMG"));
                 obj.images.add(img);
