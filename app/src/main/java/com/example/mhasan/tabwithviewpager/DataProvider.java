@@ -2,18 +2,17 @@ package com.example.mhasan.tabwithviewpager;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
  * Created by mhasan on 4/25/2017.
+ *
  */
 
 public class DataProvider extends ContentProvider {
@@ -21,12 +20,8 @@ public class DataProvider extends ContentProvider {
     public static final String BASE_PATH1 = "user";
     private static final String BASE_PATH2 = "photo";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH1);
-    public static final Uri CONTENT_URI2 = Uri.parse("content://" + AUTHORITY +"/" + BASE_PATH2);
-    public static  final String mSelectionClause = "SELECT photo.IMG FROM 'photo'   WHERE user_ID=";
-    public static final  String[] photoProjection = {
-            "IMG",
-            "user_id"
-    };
+    public static final Uri CONTENT_URI2 = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH2);
+
     // Constant to identify the requested operation
     private static final int USER = 1;
     private static final int USER_ID = 0;
@@ -60,15 +55,15 @@ public class DataProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
-        switch(uriMatcher.match(uri)){
+        switch (uriMatcher.match(uri)) {
             case USER:
-                return database.query(BASE_PATH1, DatabaseHelper.ALL_COLUMNS, selection, null, null, null, null);
+                return database.query(BASE_PATH1, DatabaseHelper.USER_COLUMNS, selection, null, null, null, null);
             case PHOTO:
-                int userID=Integer.valueOf(selection);
+                int userID = Integer.valueOf(selection);
                 return database.rawQuery("SELECT photo.IMG FROM 'photo'   WHERE user_ID= '" + userID + "'", null);
 
             default:
-                throw  new SQLException("Failed to get data "  );
+                throw new SQLException("Failed to get data ");
 
 
         }
@@ -82,20 +77,20 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long _ID=0;
-        switch (uriMatcher.match(uri)){
+        long _ID = 0;
+        switch (uriMatcher.match(uri)) {
             case USER:
-//                _ID  = database.insert(BASE_PATH1, null, values);
+              //  _ID = database.insert(BASE_PATH1, null, values);
                 getContext().getContentResolver().notifyChange(uri, null);
                 return Uri.parse(BASE_PATH1 + "/" + _ID);
 
             case PHOTO:
-              //  _ID = database.insert(BASE_PATH2, null, values);
-                getContext().getContentResolver().notifyChange(uri,null);
-                return Uri.parse(BASE_PATH2+ "/" + _ID);
+            //    _ID = database.insert(BASE_PATH2, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return Uri.parse(BASE_PATH2 + "/" + _ID);
 
             default:
-                throw  new SQLException("Failed to insert row into " + uri);
+                throw new SQLException("Failed to insert row into " + uri);
 
         }
 
